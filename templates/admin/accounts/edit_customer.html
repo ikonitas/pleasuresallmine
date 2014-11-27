@@ -1,0 +1,65 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div id="update-address"></div>
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{% trans "Accounts" %}</a> &rsaquo;
+     <a href="../">{% trans "Customers" %}</a> &rsaquo;
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Edit Customer</h1>
+<div id="content-main">
+<form action="." method="post" id="edidt_customer_form">
+    {% csrf_token %}
+<fieldset class="module aligned ">
+  {% for field in userprofile_form %}
+    <div class="form-row field-title">
+        <div>
+          {% if field.name == 'terms' %}
+          <label>Terms</label>
+          {% if user_profile.terms %}
+            <p><img src="/static/admin/img/icon-yes.gif" alt="True"></p>
+            <p class="help">Terms &#38; Conditions accepted.</p>
+          {% else %}
+            <p><img src="/static/admin/img/icon-no.gif" alt="False"</p>
+          {% endif %}
+          {% else %}
+          {% if field.name == 'phone' %}
+            <label>User</label>
+            <p>
+                <a href="{% url admin:auth_user_change user_profile.user.pk %}" />{{ user_profile.user }}</a>
+            </p>
+            <p class="help">Change First Name and Last name please click <a href="{% url admin:auth_user_change user_profile.user.pk %}" />here.</a></p>
+            {% endif %}
+            {{ field.label_tag }}
+            {{ field }}
+            {% endif %}
+        </div>
+    </div>
+  {% endfor %}
+</fieldset>
+<fieldset class="module aligned ">
+    <h2>Address</h2>
+    {% for field in address_form %}
+    <div class='form-row field-title'>
+        <div>
+            {{ field.label_tag }}
+            {{ field }}
+        </div>
+    </div>
+    {% endfor %}
+</fieldset>
+<div class="submit-row">
+    <input type="submit" value="Save" class="default" name="_save">
+    <p class="deletelink-box"><a href="delete/" class="deletelink">Delete</a></p>
+
+    <input type="submit" value="Save and add another" name="_addanother">
+    <input type="submit" value="Save and continue editing" name="_continue">
+</div>
+</form>
+</div>
+{% endblock %}

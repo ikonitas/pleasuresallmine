@@ -1,0 +1,10 @@
+*.pyc
+*.swp
+*.swo
+*.swp
+*.swm
+*.swn
+/media/cache/*
+/media/cache
+/whoosh/index/*
+/static/CACHE/*

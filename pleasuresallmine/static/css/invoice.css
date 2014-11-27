@@ -1,0 +1,230 @@
+body {
+    margin: 30px;
+    padding: 0;
+    font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    margin: 0px;
+}
+
+label {
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+}
+
+hr {
+    margin: 15px 0px;
+    border: 0;
+    border-top: 10px #E13A6F solid;
+}
+
+#wrapper {
+    width: 800px;
+}
+
+#header #logo {
+    float: left;
+}
+
+#header #logo img {
+    margin: 0;
+    padding: 0;
+}
+
+#header #logo h1 span {
+    display: none;
+}
+
+#header #company_address {
+    text-align: right;
+}
+
+#header #company_address #contact_details {
+    font-size: 0.9em;
+    padding-top: 6px;
+}
+
+#title {
+    float:left;
+    margin: -35px 0px 0px 20px;
+    padding: 0px 15px;
+    background-color: #fff;
+    display: inline;
+}
+
+#content #addresses {
+    height: 140px;
+}
+
+#content #addresses .address {
+    border: 2px #000 solid;
+    height: 130px;
+    width: 98%;
+    padding: 5px;
+}
+
+#content #addresses .address div {
+    padding-left: 50px;
+}
+
+#content #addresses #delivery {
+    float: left;
+}
+
+#content #addresses #billing {
+    float: right;
+}
+
+#content #order_details {
+    margin-top: 15px;
+    border: 2px #000 solid;
+}
+
+#content #order_details table th.order_no {
+    width: 70px;
+}
+
+#content #order_details table th.po_no {
+    width: 50px;
+}
+
+#content #order_details table th.order_date {
+    width: 90px;
+}
+
+#content #order_details table th.order_method {
+    width: 130px;
+}
+
+#content #information {
+    margin-top: 15px;
+    border: 2px #000 solid;
+    text-align: center;
+}
+
+#content #information .terms {
+    font-weight: bold;
+}
+
+#content #information .terms p {
+    margin: 0;
+    color: #cb981c;
+}
+
+#content #information #payment {
+    margin-top: 10px;
+    text-align: left;
+}
+
+#content #information #payment td {
+    vertical-align: top;
+}
+
+#content #order_items {
+    margin-top: 15px;
+}
+
+#content #order_items table {
+    margin-left: 1px;
+    border: 2px #000 solid;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 798px;
+}
+
+#content #order_items table th {
+    border: 1px #000 solid;
+    padding: 2px 5px;
+}
+
+#content #order_items table th.price_col {
+    width: 110px;
+}
+
+#content #order_items table th.subtotal {
+    text-align: left;
+}
+
+#content #order_items table th.total {
+    text-align: left;
+    font-size: 1.2em;
+    color: #E13A6F;
+}
+
+#content #order_items table th span.ex_vat {
+    font-size: 0.7em;
+    font-weight: normal;
+}
+
+#content #order_items table td {
+    padding: 2px 5px;
+}
+
+#content #order_items table td.qty {
+    text-align: center;
+    width: 30px;
+}
+
+#content #order_items table td.price {
+    text-align: right;
+    border: 1px #000 solid;
+}
+
+#content #order_items table td.total {
+    text-align: right;
+    font-size: 1.2em;
+    border: 1px #000 solid;
+    color: #E13A6F;
+}
+
+#content #notes {
+    max-height: 100%;
+}
+
+#content #notes h3 {
+    margin: 20px 0px;
+}
+
+#content #norway_text p {
+    margin: 0px;
+}
+
+#content #norway_text p#declaration {
+    margin-left: 30px;
+}
+
+#content #norway_text p#signed {
+    margin: 10px 0px 30px 0px;
+}
+
+#footer {
+    text-align: center;
+    height:20px;
+}
+
+#footer #reg {
+    float: left;
+}
+
+#footer #vat {
+    float: right;
+}
+
+#footer #thanks {
+    font-size: 1.2em;
+    font-weight: bold;
+    clear: both;
+    color: #E13A6F;
+}
+.indicator{
+  font-size:9px;
+  vertical-align:super;
+}
+#invoice_footer{
+  text-align:center;
+}

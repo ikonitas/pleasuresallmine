@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block page_title %} {{ block.super }} &raquo; Checkout {% endblock %}
+{% block meta_description %} {{ block.super }} {% endblock %}
+{% block meta_keywords %} {{ block.super }} {% endblock %}
+
+{% block breadcrumb %}
+  {{ block.super }}
+    <a href="/checkout/">/ &nbsp; CHECKOUT</a>
+{% endblock %}
+
+{% block content %}
+<div id="overlay" style="display:none;">
+  <img src="{{ STATIC_URL }}img/ajax_loader.gif" style="position:relative;top:40%;"/>
+</div>
+
+{% if cart %}
+<p class="your-cart">YOUR SHOPPING BAG <span>({{ cart.total_quantity }} item{{ products_count|pluralize:'s' }})</span></p>
+<table id="checkout-table" class='table'>
+  <thead>
+    <tr>
+      <th>ITEM DESCRIPTION</th>
+      <th>ITEM PRICE</th>
+      <th>QUANTITY</th>
+      <th>COLOR</th>
+      <th>SIZE</th>
+      <th>PRICE</th>
+    </tr>
+  </thead>
+  {% for line in orderlines %}
+  <tbody>
+    <tr>
+      <td style="width:280px;">
+        <ul style="display:inline">
+            <li>
+            <a style="text-decoration:none;color:#AAA;" href="{{ line.product.get_absolute_url }}" title="{{ line.product.name }}"/>
+            {% thumbnail line.product.get_image "151x124" as image %}
+            <img style="vertical-align:middle;float:left;" src="{{ image.url }}" width="{{ image.width }}" height="{{ image.height }}" />
+            {% endthumbnail %}
+            <p class='description'>{{ line.product.description|truncatewords:30 }}</p>
+          </a>
+            </li>
+        </ul>
+      </td>
+      <td style="width:86px" class="top30"><span class='product_price'>&pound;{{ line.product.total_price }}</span></td>
+      <td class="top30" id="qnt-td">
+        {% if not line.quantity == 1 %}<a href="{% url decrease line.product.pk %}" class='btn btn-custom' id="minus">-</a> {% else %}<span class='btn btn-custom' id="minus">-</span> {% endif %}&nbsp;&nbsp;{{ line.quantity }} &nbsp;&nbsp;<a href="{% url augment line.product.pk %}" class="btn btn-custom" id="plus">+</a>
+      </td>
+      <td>
+        {% if line.product.color.all %}
+        <select name="product_color" style="width:auto;margin-top:10px;">
+          {% for color in line.product.color.all %}
+          {% if color == line.color %}
+            <option value="{{ color.pk }}" selected="selected">{{ color.title }}</option>
+          {% else %}
+          <option value="{{ color.pk }}">{{ color.title }}</option>
+          {% endif %}
+          {% endfor %}
+          <option disabled="disabled" value="{{ line.product.pk }}" />
+        </select>
+        {% else %}
+        N/A
+        {% endif %}
+      </td>
+      <td>
+        {% if line.product.size.all %}
+        <select name="product_size" style="width:auto;margin-top:10px;">
+          {% for size in line.product.size.all %}
+          {% if size == line.size %}
+            <option value="{{ size.pk }}" selected="selected">{{ size.title }}</option>
+          {% else %}
+          <option value="{{ size.pk }}">{{ size.title }}</option>
+          {% endif %}
+          {% endfor %}
+          <option disabled="disabled" value="{{ line.product.pk }}" />
+          <input type="hidden" name="product_pk" value="{{ line.product.pk }}"
+        </select>
+        {% else %}
+        N/A
+        {% endif %}
+      </td>
+      <td class="top30"><p class='total'>&pound;{{ line.line_price }}</p>
+        <br/>
+        <form method="post" action='{% url basket_remove %}' >
+          {% csrf_token %}
+          <button class="btn btn-custom remove-item" type="submit">REMOVE ITEM</button>
+          <input type="hidden" name="product_pk" value="{{ line.product.pk }}">
+        </form>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+<div class="additional-info">
+  <form method="POST" action="." id="note-form">
+    {% csrf_token %}
+    <input type="hidden" name="order_note" value="{{ order.pk }}" />
+    <label>Delivery notes:</label>
+    <textarea rows="4" class="additional" name="note">{% if order.note %}{{ order.note }}{% endif %}</textarea>
+    <input type="submit" value="Add Note" style="float:right;"/>
+  </form>
+</div>
+<div class="delivery-price">
+  <table class="delivery-table">
+    <caption>Post and Packing</caption>
+    <tbody>
+      <tr>
+        <td>
+          <form method="POST" action="." id="delivery-form">
+            {% csrf_token %}
+              <input type="radio" name="delivery" checked="checked"/> {{ delivery.name|safe }} <span class='form-del-price'>&pound;{{ delivery.price }}</span>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="total-price">
+  <table class="total-price-table">
+    <caption>Total price</caption>
+    <tbody>
+      <tr style="text-align:center;">
+        <td>
+          <p class="table-total-price">&pound;{{ order.get_total }}</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br/>
+<div style="clear:both"></div>
+<div class="buy-form">
+    {{ form }}
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(document).ready(function(){
+
+  $('input[name="delivery"]').change(function(){
+    var docHeight = $('.span8').height();
+    var docWidth = $('.span8').width();
+    $("#overlay")
+    .height(docHeight)
+    .width(docWidth)
+    .css({
+       'opacity' : 0.1,
+       'position': 'absolute',
+       'background-color': 'black',
+       'text-align': 'center',
+     })
+     .show();
+    $('#delivery-form').submit();
+  });
+
+  $('.additional').change(function(){
+    $('#note-form').submit();
+  });
+
+  $('select[name="product_color"]').change(function(){
+    $.post("{% url color_change %}", {"product_pk": $(this).children('option').last().val(),
+                                      "color": $(this).val(),
+                                      "order_pk": {{ order.pk }},
+                                      "csrfmiddlewaretoken": "{{ csrf_token }}"},
+      function(data){
+        window.location.reload()
+      });
+  });
+  $('select[name="product_size"]').change(function(){
+    $.post("{% url size_change %}", {"product_pk": $(this).children('option').last().val(),
+                                      "size": $(this).val(),
+                                      "order_pk": {{ order.pk }},
+                                      "csrfmiddlewaretoken": "{{ csrf_token }}"},
+      function(data){
+        window.location.reload()
+      });
+  });
+
+});
+</script>
+<script>
+  $(document).ready(function(){
+    $('#buy-button').click(function(e){
+      $.post('/basket/ajax/session/', {'csrfmiddlewaretoken': '{{ csrf_token }}' }, function(data){
+      });
+    });
+  });
+</script>
+{% endblock %}

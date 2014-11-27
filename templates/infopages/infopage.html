@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+{{ block.super }} - {{ infopage.page_title }}
+{% endblock %}
+
+{% block meta_description %}
+  {% if infopage.meta_description %}
+    {{ infopage.meta_description }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if infopage.meta_keywords %}
+    {{ infopage.meta_keywords }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+
+{% block breadcrumb %}
+{{ block.super }}
+  <img src="{{ STATIC_URL }}img/pink_triangle.png" />
+  <a href="#" onclick='return false;' title="{{ parent_category.name }}">
+    {{ infopage.title }}
+  </a>
+{% endblock %}
+
+
+{% block content %}
+<h1 class='top-name'>{{ infopage.title|upper }}</h1>
+<div id="infopage-content">
+  {{ infopage.content|safe }}
+</div>
+{% endblock %}

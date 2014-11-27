@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+  {{ block.super }} - {{ category.page_title }}
+{% endblock %}
+
+{% block meta_description %}
+  {% if category.meta_description %}
+    {{ category.meta_description }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if category.meta_keywords %}
+    {{ category.meta_keywords }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }} <img src="{{ STATIC_URL }}img/pink_triangle.png" /> <a href="/{{ parent_category.slug }}/" title="{{ parent_category.name }}">{{ parent_category.name }}</a> <img src="{{ STATIC_URL }}img/pink_triangle.png" /> <a href="/{{ category.get_absolute_url }}/" title="{{ category.name }}">{{ category.name|title }}</a>
+{% endblock %}
+
+{% block content %}
+<h1 class='top-name'>{{ category.name|upper }}</h1>
+<span class="right-pagination">
+  <span class="current">
+    Page {{ products.number }} of {{ products.paginator.num_pages }}
+  </span>
+  {% if products.has_previous %}
+  <a href="?page={{ products.previous_page_number }}"><img src="{{ STATIC_URL }}img/previous_icon.png" /></a>
+  {% endif %}
+  {% if products.has_next %}
+  <a href="?page={{ products.next_page_number }}"><img src="{{ STATIC_URL }}img/next_icon.png" /></a>
+  {% endif %}
+</span>
+<div style="clear:both;"></div>
+<ul>
+  {% for product in products %}
+    <a href="{{ product.get_absolute_url }}" title="{{ product.name }}" style="float:left;margin-top:14px;"/>
+      <li class="product">
+      {% if product.get_image %}
+          {% thumbnail product.get_image "100x150" crop="center" as image %}
+            <img src="{{ image.url }}" alt="{{ product.name }}" title="{{ product.name }}" />
+            {% endthumbnail %}
+      {% else %}
+            <img src="{{ STATIC_URL }}img/no_image_thumb.gif" alt="{{ product.name }}" title="{{ product.name }}" width="100" height="150"/>
+       {% endif %}
+       <p class="pro-name">{{ product.name|upper|truncatechars:30 }}</p>
+       <p class="pro-description">{{ product.description|truncatewords:12 }}</p>
+       <span class="pro-price">&pound;{{ product.total_price }}</span>
+       <br/>
+       <form action="/basket/add/?next={{ request.path }}" method="POST">
+         {% csrf_token %}
+         <input type="hidden" name="product_pk" value="{{ product.pk }}"/>
+       <button type="submit" class="btn btn-custom view-add">Add To Bag</button>
+       </form>
+     </li>
+   </a>
+ {% endfor %}
+</ul>
+<div style="clear:both;"></div>
+<span class="right-pagination">
+  <span class="current">
+    Page {{ products.number }} of {{ products.paginator.num_pages }}
+  </span>
+  {% if products.has_previous %}
+  <a href="?page={{ products.previous_page_number }}"><img src="{{ STATIC_URL }}img/previous_icon.png" /></a>
+  {% endif %}
+  {% if products.has_next %}
+  <a href="?page={{ products.next_page_number }}"><img src="{{ STATIC_URL }}img/next_icon.png" /></a>
+  {% endif %}
+</span>
+{% endblock %}

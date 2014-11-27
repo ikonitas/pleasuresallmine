@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+  {{ block.super }} - {{ category.page_title }}
+{% endblock %}
+
+{% block meta_description %}
+  {% if category.meta_description %}
+    {{ category.meta_description }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if category.meta_keywords %}
+    {{ category.meta_keywords }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }} <img src="{{ STATIC_URL }}img/pink_triangle.png" /> <a href="/{{ category.slug }}/" title="{{ category.name }}" />{{ category.name|title }}</a>
+{% endblock %}
+
+{% block content %}
+<h1 class='top-name'>{{ category.name|upper }}</h1>
+<div style="clear:both;"></div>
+<ul>
+  {% for category in categories %}
+    <a href="{{ category.slug }}/" title="{{ category.name }}" />
+      <li class="category">
+        {% if category.get_random_image %}
+          {% thumbnail category.get_random_image "150x200" crop="center" as image %}
+            <img src="{{ image.url }}" alt="{{ category.name }}" title="{{ category.name }}" />
+          {% endthumbnail %}
+        {% else %}
+          <img src="{{ STATIC_URL }}img/no_image_thumb.gif" alt="{{ category.name }}" title="{{ category.name }}" />
+       {% endif %}
+       <p>{{ category.name }}</p>
+    </li>
+   </a>
+ {% endfor %}
+</ul>
+{% endblock %}

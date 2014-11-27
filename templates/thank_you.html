@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+{{ block.super }} - Thank you for you order
+{% endblock %}
+
+{% block meta_description %}
+    {{ block.super }} Thank you
+{% endblock %}
+
+{% block meta_keywords %}
+    {{ block.super }} Thank you
+{% endblock %}
+
+
+{% block breadcrumb %}
+{{ block.super }} <img src="/static/img/pink_triangle.png"> <a href="/thank-you/">Thank you</a>
+{% endblock %}
+
+
+{% block content %}
+<h1 class='top-name'>Order Placed.</h1>
+<div id="infopage-content">
+  <p>Thank you you have succesfully placed you order as soon as we will received payment from paypal you will be able to check your orders <a href="/my-orders/">here</a>.</p>
+</div>
+{% endblock %}

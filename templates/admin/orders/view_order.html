@@ -1,0 +1,236 @@
+{% extends "admin/change_form.html" %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/lib/jquery-1.8.0.min.js"></script>
+<script>
+  $(document).ready(function(){
+
+    function get_price(quantity, product_pk){
+      $.getJSON('/admin/orders/order/get-price/',
+        {'quantity': quantity, 'product_pk': product_pk}, function(json){
+          $('#orderline-price').val(json.price);
+      });
+    }
+
+    $('#orderline-quantity').change(function(){
+      if ($('select[name="orderline_product"]').val().length){
+        var quantity = $(this).val();
+        var product_pk = $('select[name="orderline_product"]').val();
+        get_price(quantity, product_pk);
+      }
+    });
+
+    $('select[name="orderline_product"]').change(function(){
+      if ($('#orderline-quantity').val()){
+        var product_pk = $(this).val();
+        var quantity = $('#orderline-quantity').val();
+        get_price(quantity, product_pk)
+      }
+    });
+  });
+</script>
+{% endblock %}
+{% block breadcrumbs %}
+<div class="hide_print breadcrumbs">
+     <a href=../../../>Home</a> &rsaquo;
+     <a href=../../>Orders</a> &rsaquo;
+     <a href=../>Orders</a> &rsaquo;
+     {{ order.number }}
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .html_invoice{background:url({{ STATIC_URL}}img/pdf_icon.gif) no-repeat scroll right top #fff;display:block;width:111px;height:18px}
+</style>
+<div id="content-main">
+    <fieldset class="hide_print module aligned ">
+        <h2>Order Information</h2>
+        <div class="form-row">
+            <label>Order status:</label>
+            {{ order.payment_status }}
+        </div>
+        <div class="form-row">
+          <label>Order note:</label>
+          {{ order.note }}
+        </div>
+        <div class="form-row">
+            <label>Order created:</label>
+            {{ order.purchased_at}}
+        </div>
+        <div class="form-row">
+            <label>Order Paypal Transaction Id:</label>
+            {{ order.transaction_id }}
+        </div>
+        <div class="form-row">
+            <label>Paypal Payer Email</label>
+            {{ order.payer_email }}
+        </div>
+        <div class="form-row">
+            <label>Paypal Payer Full Name</label>
+            {{ order.payer_full_name }}
+        </div>
+        <div class="form-row">
+          <strong><a href="html-invoice/" class="html_invoice">View Invoice</a></strong>
+        </div>
+
+       <h2>Customer Information</h2>
+       <div class="form-row">
+           <label>Full name:</label>
+               {{ userprofile.full_name }}
+       </div>
+       <div class="form-row">
+           <label>E-mail:</label>
+           {{ order.user.email }}
+       </div>
+        <div id="admin_address" class="form-row">
+           <label>Address:</label>
+            {% if address.line_1 %}
+                {{ address.line_1}}
+            {% endif %}
+            {% if address.line_2 %}
+                <p style="margin-left:96px;">{{ address.line_2 }}</p>
+            {% endif %}
+            {% if address.city %}
+                <p style="margin-left:96px;">{{ address.city }}</p>
+            {% endif %}
+            {% if address.county %}
+                <p style="margin-left:96px;">{{ address.county }}</p>
+            {% endif %}
+            {% if address.postcode %}
+                <p style="margin-left:96px;">{{ address.postcode }}</p>
+            {% endif %}
+       </div>
+    </fieldset>
+    <div class="inline-group">
+        <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+            <fieldset class="module">
+                <h2>Order lines</h2>
+                <form method="post" action=".">
+                  {% csrf_token %}
+                  <table>
+                    <thead>
+                      <tr>
+                        <th colspan="2">Product</th>
+                        <th>Product Description</th>
+                        <th>Status</th>
+                        <th>Quantity</th>
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Unit Price</th>
+                        <th>Unit Price with Margin</th>
+                        <th>Line Price</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    {% for line in order.orderline_set.all %}
+                    <tr class="{% cycle row1,row2 %}">
+                      <td><input class="hide_print" type="checkbox" name="line" value="{{ line.pk }}" /></td>
+                      <td>{{ line.product.name }}</td>
+                      <td>{{ line.product.description }}</td>
+                      <td>{{ line.get_status_display }}</td>
+                      <td>{{ line.quantity }}</td>
+                      <td>{{ line.color }}</td>
+                      <td>{{ line.size }}</td>
+                      <td>&pound;{{ line.product.price }}</td>
+                      <td>&pound;{{ line.product.total_price }}</td>
+                      <td>&pound;{{ line.line_price }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                      <td  colspan="9" align="right"><strong>Delivery Price:</strong></td>
+                      <td><strong>&pound;{{ order.delivery.price }}</strong></td>
+                    </tr>
+                    <tr>
+                      <td  colspan="9" align="right"><strong>Returned:</strong></td>
+                      <td>
+                        <strong>
+                          <span
+                            {% if order.get_returned < 0 %} style="color:red" {% else %} style="color:green" {% endif %}>&pound;{{ order.get_returned }}
+                          </span>
+                        </strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td  colspan="9" align="right"><strong>Total:</strong></td>
+                      <td><strong>&pound;{{ order.get_total }}</strong></td>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="3">
+                        {% if order.payment_status == "Completed" %}
+                        <select name="line_status">
+                          <option value="">----</option>
+                          {% for key, val in orderline_status_choices %}
+                            <option value="{{ key }}">{{ val }}</option>
+                          {% endfor %}
+                        </select>
+                        {% endif %}
+                        <input type="submit" value="Change status" name="change_line_status"/>
+                        <input type="submit" value="Delete order line" name="delete_order_line" />
+                      </td>
+                    </tr>
+                  </table>
+                </form>
+            </fieldset>
+        </div>
+    </div>
+    <div class="inline-group">
+       <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+         <fieldset class="module">
+           <h2>Add Order line</h2>
+           <form method="post" action=".">
+             {% csrf_token %}
+             <table>
+               <thead>
+                 <tr>
+                   <th>Product</th>
+                   <th>Quantity</th>
+                   <th>Color</td>
+                   <th>Size</th>
+                   <th>Line Price</th>
+                   <th></th>
+                 </tr>
+               </thead>
+               <tr class="{% cycle row1,row2 %}">
+                 <td class="field-product">
+                   <select name="orderline_product">
+                     <option value="" selected="selected">---------</option>
+                     {% for product in products %}
+                     <option value="{{ product.pk }}">{{ product.name }}</option>
+                     {% endfor %}
+                   </select>
+                 </td>
+                 <td class="field-quantity">
+                   <input id="orderline-quantity" type="text" class="vIntegerField" name="orderline_quantity">
+                 </td>
+                 <td>
+                   <select name="product_color">
+                   <option value="" selected="selected">------</option>
+                   {% for color in colors %}
+                   <option value="{{ color.pk }}">{{ color.title }}</option>
+                   {% endfor %}
+                   </select>
+                 </td>
+                 <td>
+                   <select name="product_size">
+                     <option value="" selected="selected">------</option>
+                     {% for size in sizes %}
+                     <option value="{{ size.pk }}">{{ size.title }}</option>
+                     {% endfor %}
+                  </select>
+                 </td>
+                 <td class="field-line_price"><input type="text" name="orderline_price" id="orderline-price"></td>
+               </tr>
+               <tr>
+                 <td colspan="2">
+                   <input type="submit" value="Add Orderline" name="add_orderline"/>
+                 </td>
+               </tr>
+             </table>
+           </form>
+         </fieldset>
+       </div>
+     </div>
+</div>
+{% endblock %}

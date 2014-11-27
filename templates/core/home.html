@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load i18n %}
+
+{% block left %}
+{% endblock %}
+
+{% block body_class %}
+{{ block.super }} home
+{% endblock %}
+
+{% block breadcrumb %}
+{% endblock %}
+
+{% block content %}
+<a href="{{ list_categories.0.slug }}" title="{{ list_categories.0.name }}">
+{% if screen %}
+  {% thumbnail screen.image "900x371" as image %}
+  <img class="main-img" src="{{ image.url }}" alt="Pleasu All Mine" title="Pleasure All Mine" />
+  {% endthumbnail %}
+{% else %}
+  <img class="main-img" src="{{ STATIC_URL }}img/main.png" alt="Pleasu All Mine" title="Pleasure All Mine" />
+{% endif %}
+</a>
+<img src="{{ STATIC_URL }}img/special_bg.png" alt="Special offers" title="Special offers" />
+<ul class="special-offer">
+{% for product in special_offers %}
+  <li>
+    <a href="{{ product.get_absolute_url }}" />
+    {% thumbnail product.get_image "100x150" crop="center" as image %}
+    <img src="{{ image.url }}" alt="{{ product.name }}" title="{{ product.name }}" />
+    {% endthumbnail %}
+    <p class="name">{{ product.name }}</p>
+    <p class="special-price">&pound;{{ product.total_price }}</p>
+    </a>
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}

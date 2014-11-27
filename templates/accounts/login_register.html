@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+{{ block.super }} - Login and Registration
+{% endblock %}
+
+{% block meta_description %}
+{% endblock %}
+
+{% block meta_keywords %}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }} <img src="{{ STATIC_URL }}img/pink_triangle.png" /> <a href="/login/" title="Login and Register" />Login / Register></a>
+{% endblock %}
+
+{% block alert %}
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'warning' %}
+<div class="alert  alert-error" >
+{% else %}
+<div class="alert">
+{% endif %}
+  <div class="top-alert-container">
+  <button type="button" class="close" data-dismiss="alert">×</button>
+  {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<table class="login-table">
+  <caption>LOGIN</caption>
+  <thead>
+    <tr>
+        <th>For existing customers</th>
+        <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td>
+        <form class="form-horizontal" action='./?next={{ next_url }}' method="POST" id="login">
+          {% csrf_token %}
+          {% for field in login_form %}
+          <div class="control-group">
+            <label class="control-label" for="inputEmail">{{ field.label_tag }}</label>
+              <div class="controls">
+                {{ field }}
+              </div>
+          </div>
+          {% endfor %}
+          <div class="control-group">
+            <div class="controls" style="margin-left:90px;">
+              <label class="checkbox" style="float:left;margin-right:10px">
+                <input type="checkbox" name="remember_me"> Remember me
+                <input type="hidden" name="redirect_field_name" value="{{ next_url }}" />
+              </label>
+            <button name="login" value="login" type="submit" class="btn sign-in-button">Sign in</button>
+           </div>
+          </div>
+        </form>
+      </td>
+  </tr>
+  </tbody>
+</table>
+
+
+
+<table class="registration-table">
+  <caption>REGISTER</caption>
+  <thead>
+    <tr>
+        <th>For new customers</th>
+        <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td>
+        <form class="form-horizontal" action='.' method="POST" id="register">
+          {% csrf_token %}
+          {% for field in registration_form %}
+          <div class="control-group">
+               {{ field.errors }}
+            {% if field.label == "I agree to the website terms and conditions" %}
+            <label class="control-label" style="width:130px;">
+              <label for="id_terms">I agree to the website <a style="text-decoration:none;color:#C33177;" href="/infopage/terms-and-conditions/">terms and conditions</a></label>
+            </label>
+            <div class="controls">
+              <input type="checkbox" name="terms" id="id_terms" style="margin-left:20px;">
+              <button value="register" name="register" type="submit" class="btn" style="margin-left:66px;">Sign in</button>
+
+            </div>
+            {% else %}
+            <label class="control-label">{{ field.label_tag }}</label>
+              <div class="controls">
+                {{ field }}
+              </div>
+          {% endif %}
+          </div>
+          {% endfor %}
+        </form>
+      </td>
+  </tr>
+  </tbody>
+</table>
+{% endblock %}

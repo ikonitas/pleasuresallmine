@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+  {{ block.super }} - My Orders
+{% endblock %}
+
+{% block meta_description %}
+  {{ block.super }} My Orders
+{% endblock %}
+
+{% block meta_keywords %}
+  {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }} <img src="{{ STATIC_URL }}img/pink_triangle.png" /> <a href="/my-orders/" title="My orders" />My orders</a>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+<h1 style="font-size:20px;">MY ORDERS</h1>
+<h2 class="custom-h2">Customer Information:</h2>
+<div class="table_wrapper" style="float:left;">
+<div class="profile-img"></div>
+<table id="my-order-customer" class="table">
+    <thead>
+        <tr>
+            <th>FULL NAME</th>
+            <th>ADDRESS LINE 1</th>
+            <th>CITY</th>
+            <th>POSTCODE</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ userprofile.full_name }}</td>
+            <td>{{ address.line_1 }}</td>
+            <td>{{ address.city }}</td>
+            <td>{{ address.postcode }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+{% if orders %}
+<h2 class="custom-h2">Orders:</h2>
+<table id="my-orders-table" class='table'>
+    <thead>
+        <tr>
+            <th>ORDER NUMBER</th>
+            <th>ORDER CREATED</th>
+            <th>PAYPAL TRANSACTION NUMBER</th>
+            <th>ORDER STATUS</th>
+            <th>ITEMS</th>
+            <th>TOTAL PRICE</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+        <tr>
+            <td>{{ order.number }}</td>
+            <td>{{ order.purchased_at }}</td>
+            <td>{{ order.transaction_id }}</td>
+            <td>{{ order.payment_status }}</td>
+            <td>{{ order.orderline_set.all|length }}</td>
+            <td>&pound;{{ order.get_total }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% load thumbnail %}
+
+{% block page_title %}
+{{ block.super }} - Search results for {{ search_term }}
+{% endblock %}
+
+{% block meta_description %}
+  {% if category.meta_description %}
+    Search results for {{ search_term }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}
+  {% if category.meta_keywords %}
+    Search results for {{ search_term }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+{{ block.super }} <img src="{{ STATIC_URL }}img/pink_triangle.png" /> Search
+{% endblock %}
+
+{% block content %}
+<h1 class='top-name'>Search results for '{{ search_term }}'</h1>
+<div style="clear:both;"></div>
+<ul>
+  {% for product in products %}
+    <a href="{{ product.get_absolute_url }}" title="{{ product.name }}" />
+      <li class="product">
+      {% if product.get_image %}
+          {% thumbnail product.get_image "100x150" crop="center" as image %}
+            <img src="{{ image.url }}" alt="{{ product.name }}" title="{{ product.name }}" />
+            {% endthumbnail %}
+      {% else %}
+            <img src="{{ STATIC_URL }}img/no_image_thumb.gif" alt="{{ product.name }}" title="{{ product.name }}" width="100" height="150"/>
+       {% endif %}
+       <p class="pro-name">{{ product.name|upper|truncatechars:30 }}</p>
+       <p class="pro-description">{{ product.description|truncatewords:12 }}</p>
+       <span class="pro-price">&pound;{{ product.total_price }}</span>
+       <br/>
+       <form action="/basket/add/" method="POST">
+         {% csrf_token %}
+         <input type="hidden" name="product_pk" value="{{ product.pk }}"/>
+       <button type="submit" class="btn btn-custom view-add">Add To Bag</button>
+    </li>
+   </a>
+ {% endfor %}
+</ul>
+{% endblock %}

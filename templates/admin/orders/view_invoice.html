@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Invoice: {{ order.number }}</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/invoice.css" />
+    <!--[if IE 7]><link rel="stylesheet" href="{{ MEDIA_URL}}css/invoice_ie7.css" /><![endif]-->
+    <link rel="shortcut icon" href="{{ MEDIA_URL }}images/favicon.png" type="image/png" />
+</head>
+<body>
+    <div id="wrapper">
+        <div id="header">
+            <div id="logo">
+                <img src="{{ STATIC_URL }}img/invoice1.png" alt="Bullion by Post" />
+            </div>
+            <div id="company_address">
+                <div id="contact_details">
+                    <label>Tel:</label> 0121 554 9914<br />
+                    <label>Fax:</label> 0845 643 6497<br />
+                    <label>E-mail:</label> info@pleasuresallmine.co.uk<br />
+                </div>
+            </div>
+        </div>
+        <hr />
+        <h2 id="title">Invoice</h2>
+        <div id="content">
+            <div id="addresses">
+                <div id="delivery"  class="address">
+                    <h3>Delivery address:</h3>
+                    <div>
+                      <br/>
+                      {{ order.user.userprofile.full_name }} <br/>
+                      {{ address.line_1 }}<br/>
+                      {{ address.city }}<br/>
+                      {% if address.county %}
+                      {{ address.county }}<br/>
+                      {% endif %}
+                      {{ address.postcode }} <br/>
+                    </div>
+                </div>
+            </div>
+            <div id="order_details">
+                <table>
+                    <tr>
+                        <th class="order_no">Order no:</th>
+                        <td class="order_no">{{ order.number }}</td>
+                        <th class="order_date">Invoice date:</th>
+                        <td class="order_no">{{ order.purchased_at|date }}</td>
+                        <td class="order_method">{{ order.get_payment_method_display }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="order_items">
+                <table>
+                    <tr>
+                        <th>Qty</th>
+                        <th>Product</th>
+                        <th class="price_col" colspan="2" align="right">Line price<br /></th>
+                        {% if order.has_discounted_lines %}
+                        <th class="price_col">Discounted Price<br /><span class="ex_vat">(ex. VAT)</span></th>
+                        {% endif %}
+                    </tr>
+                   {% for line in order.orderline_set.all %}
+                     {% if line.status != 2 %}
+                    <tr>
+                      <td class="qty">{{ line.quantity }}</td>
+                      <td>{{ line.product.name }}</td>
+                        <td class="price" colspan="2">&pound;{{ line.line_price }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    <tr>
+                        <td colspan="{% if order.has_discounted_lines %}3{% else %}2{% endif %}"></td>
+                        <th class="subtotal">Delivery:</th>
+                        <td class="price">
+                          &pound;{{ order.delivery.price }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="{% if order.has_discounted_lines %}3{% else %}2{% endif %}"></td>
+                        <th class="total">Total:</th>
+                        <td class="total">&pound;{{ order.get_total }}</td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+        <br />
+        <div>
+          {% if invoice_text %}
+          {% for invoice_text in invoice_text %}
+          <p><b>{% if invoice_text.is_active %}{{ invoice_text.indicator }}</b> - {{ invoice_text.invoice_text }}{% endif %}</p>
+          {% endfor %}
+          {% endif %}
+        </div>
+        <br/>
+        <div id="invoice_footer">
+          {% if  footer %}
+          {{ footer }}
+          {% endif %}
+        </div>
+        <div id="footer">
+            <p id="thanks">Thank you for shopping at<br />Pleasures All Mine</p>
+        </div>
+    </div>
+</body>
+</html>
